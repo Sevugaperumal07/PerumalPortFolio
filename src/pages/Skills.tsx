@@ -40,8 +40,8 @@ const SKILL_GROUPS = [
 
 export default function Skills() {
   return (
-    <div className="max-w-7xl mx-auto px-6 py-20">
-      <header className="mb-20 text-center">
+    <div className="max-w-7xl mx-auto px-6 pb-20 pt-8">
+      <header className="mb-12 text-center">
         <h1 className="text-5xl font-bold mb-6">Technical Arsenal</h1>
         <p className="text-xl text-on-surface-variant max-w-2xl mx-auto">
           A comprehensive view of my technical capabilities and proficiency across various domains.

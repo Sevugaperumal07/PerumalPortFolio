@@ -61,7 +61,7 @@ export default function Contact() {
             </div>
             <div>
               <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-1">Email Inquiry</p>
-              <p className="text-lg font-bold">hello@portfolio.com</p>
+              <p className="text-lg font-bold">Perumalsevuga44@gmail.com</p>
             </div>
           </Card>
           
@@ -71,7 +71,7 @@ export default function Contact() {
             </div>
             <div>
               <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-1">Location</p>
-              <p className="text-lg font-bold">Remote / San Francisco, CA</p>
+              <p className="text-lg font-bold">Madurai,Tamilnadu,India</p>
             </div>
           </Card>
 
@@ -98,7 +98,7 @@ export default function Contact() {
                     value={formData.name}
                     onChange={handleChange}
                     type="text"
-                    placeholder="John Doe"
+                    placeholder="Your Name"
                     disabled={status === 'loading'}
                     className="w-full bg-surface-dim border border-white/5 rounded-2xl px-6 py-4 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none disabled:opacity-50"
                   />
@@ -111,7 +111,7 @@ export default function Contact() {
                     value={formData.email}
                     onChange={handleChange}
                     type="email"
-                    placeholder="john@example.com"
+                    placeholder="Your@example.com"
                     disabled={status === 'loading'}
                     className="w-full bg-surface-dim border border-white/5 rounded-2xl px-6 py-4 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none disabled:opacity-50"
                   />

@@ -1,18 +1,41 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Code, Cpu, Layout, Terminal as TerminalIcon } from 'lucide-react';
+import { ArrowRight, Code, Cpu, Layout, Terminal as TerminalIcon, Github, Linkedin, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Button } from '../components/common/Button';
 import { Card } from '../components/common/Card';
 import { ProjectList } from '../components/project/ProjectList';
-import { PROJECTS } from '../utils/constants';
+import { PROJECTS, EXPERIENCES } from '../utils/constants';
+import { graphqlClient } from '../lib/api.ts';
+import { GET_ALL_USERS_QUERY } from '../lib/graphql.ts';
 
 export default function Home() {
   const featuredProjects = PROJECTS.filter(p => p.featured);
+  const [userData, setUserData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchProfile = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await graphqlClient<any>(GET_ALL_USERS_QUERY);
+      if (data.getAllUsers && data.getAllUsers.length > 0) {
+        setUserData(data.getAllUsers[0]);
+      } else {
+        setError('No user data found.');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to fetch user data');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="space-y-32">
       {/* Hero Section */}
-      <section className="relative min-h-[80vh] flex flex-col justify-center px-6 overflow-hidden hero-mesh">
+      <section id="about" className="relative min-h-[80vh] flex flex-col justify-center px-6 overflow-hidden hero-mesh scroll-mt-24">
         <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -36,7 +59,43 @@ export default function Home() {
               <Button as={Link} to="/contact" variant="outline" size="lg">
                 Let's Chat
               </Button>
+              <Button onClick={fetchProfile} variant="outline" size="lg" disabled={isLoading} className="border-secondary text-secondary hover:bg-secondary/10">
+                {isLoading ? <Loader2 className="animate-spin mr-2" size={20} /> : null}
+                {userData ? 'Refresh Profile' : 'Load Live Profile'}
+              </Button>
             </div>
+
+            {error && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                <p className="text-red-400 text-sm">{error}</p>
+              </motion.div>
+            )}
+            
+            {userData && (
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-8 flex flex-wrap gap-4 items-center bg-surface-container-high/50 p-5 rounded-2xl border border-white/5 shadow-xl"
+              >
+                <div className="flex-1 min-w-[200px]">
+                  <p className="font-bold text-white text-lg">{userData.name}</p>
+                  <p className="text-on-surface-variant text-sm">{userData.role} • {userData.location}</p>
+                  <p className="text-on-surface-variant/80 text-xs mt-1 italic">{userData.bio}</p>
+                </div>
+                <div className="flex gap-3">
+                  {userData.githubUrl && (
+                    <Button onClick={() => window.open(userData.githubUrl, '_blank', 'noopener,noreferrer')} variant="outline" size="sm" className="gap-2 bg-surface-dim hover:bg-surface-dim/80">
+                      <Github size={16} /> GitHub
+                    </Button>
+                  )}
+                  {userData.linkedinUrl && (
+                    <Button onClick={() => window.open(userData.linkedinUrl, '_blank', 'noopener,noreferrer')} variant="outline" size="sm" className="gap-2 bg-[#0a66c2]/10 hover:bg-[#0a66c2]/20 border-[#0a66c2]/30 text-[#0a66c2] hover:text-[#0a66c2]">
+                      <Linkedin size={16} /> LinkedIn
+                    </Button>
+                  )}
+                </div>
+              </motion.div>
+            )}
           </motion.div>
 
           <motion.div
@@ -70,12 +129,69 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Experience Section */}
+      <section id="experience" className="px-6 max-w-7xl mx-auto scroll-mt-24">
+        <div className="text-center mb-20">
+          <h2 className="text-4xl font-bold mb-4">Professional Journey</h2>
+          <p className="text-on-surface-variant max-w-2xl mx-auto">A chronological exploration of my technical evolution and impact.</p>
+        </div>
+        
+        <div className="relative border-l-2 border-white/5 ml-4 md:ml-0 md:max-w-4xl md:mx-auto pl-12 space-y-16">
+          {EXPERIENCES.map((exp, idx) => (
+            <motion.div
+              key={exp.id}
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ delay: idx * 0.1 }}
+              className="relative"
+            >
+              <div className="absolute left-[-54px] top-6 w-5 h-5 rounded-full bg-primary ring-4 ring-surface-dim shadow-[0_0_20px_rgba(192,193,255,0.4)]" />
+              
+              <Card className="hover:border-primary/20 transition-all">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                  <div>
+                    <h3 className="text-2xl font-bold text-white mb-1">{exp.role}</h3>
+                    <p className="text-primary font-semibold">{exp.company}</p>
+                  </div>
+                  <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/5 text-sm font-bold text-on-surface-variant">
+                    {exp.period}
+                  </span>
+                </div>
+                
+                <ul className="space-y-4 mb-8">
+                  {exp.description.map((item, i) => (
+                    <li key={i} className="flex gap-4 text-on-surface-variant leading-relaxed">
+                      <span className="text-primary mt-2 shrink-0 w-1.5 h-1.5 rounded-full bg-primary" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="flex flex-wrap gap-2">
+                  {exp.skills.map((skill) => (
+                    <span key={skill} className="px-3 py-1 rounded-lg bg-surface-dim border border-white/5 text-xs font-bold text-secondary">
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
       {/* Services/Toolbox Section */}
-      <section className="px-6 max-w-7xl mx-auto">
+      <section id="skills" className="px-6 max-w-7xl mx-auto scroll-mt-24">
         <div className="text-center mb-20">
           <h2 className="text-3xl font-bold mb-4">Core Expertise</h2>
           <p className="text-on-surface-variant max-w-2xl mx-auto">Focused on building robust solutions across the entire technical stack using modern standards.</p>
+          <div className="text-right">
+          <Button as={Link} to="/skills" variant="outline">
+            View Technical Arsenal <ArrowRight size={18} className="ml-2" />
+          </Button>
         </div>
+        </div>
+        
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
             { icon: <Layout className="text-primary" />, title: 'Frontend Development', desc: 'Frontend Development: Crafting seamless and responsive user interfaces using React.js, ensuring high performance and intuitive user experiences.' },
@@ -94,7 +210,7 @@ export default function Home() {
       </section>
 
       {/* Projects Section */}
-      <section className="px-6 max-w-7xl mx-auto">
+      <section id="work" className="px-6 max-w-7xl mx-auto scroll-mt-24">
         <div className="flex items-end justify-between mb-16">
           <div>
             <h2 className="text-4xl font-bold mb-4">Featured Work</h2>
@@ -106,28 +222,28 @@ export default function Home() {
         </div>
         <ProjectList projects={featuredProjects} />
         <div className="mt-12 text-center md:hidden">
-            <Button as={Link} to="/projects" variant="ghost">
-                Explore All Projects <ArrowRight size={18} className="ml-2" />
-            </Button>
+          <Button as={Link} to="/projects" variant="ghost">
+            Explore All Projects <ArrowRight size={18} className="ml-2" />
+          </Button>
         </div>
       </section>
 
       {/* Final CTA */}
-      <section className="px-6 max-w-7xl mx-auto mb-20 text-center">
+      <section id="contact" className="px-6 max-w-7xl mx-auto mb-20 text-center scroll-mt-24">
         <Card className="p-16 md:p-32 border-primary/10 overflow-hidden relative">
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[120px] rounded-full" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-secondary/10 blur-[120px] rounded-full" />
-          
+
           <div className="relative z-10">
             <h2 className="text-4xl md:text-6xl font-bold mb-8 leading-tight">
-                Ready to build something <span className="text-secondary">extraordinary?</span>
+              Ready to build something <span className="text-secondary">extraordinary?</span>
             </h2>
             <p className="text-xl text-on-surface-variant max-w-2xl mx-auto mb-12">
-                I'm currently accepting new projects. Let's discuss your architectural needs and business goals.
+              I'm currently accepting new projects. Let's discuss your architectural needs and business goals.
             </p>
             <div className="flex flex-wrap gap-6 justify-center">
-                <Button size="lg" as={Link} to="/contact">Schedule a Discovery Call</Button>
-                <Button size="lg" variant="outline">Download Case Studies</Button>
+              <Button size="lg" as={Link} to="/contact">Schedule a Discovery Call</Button>
+              <Button size="lg" variant="outline">Download Case Studies</Button>
             </div>
           </div>
         </Card>

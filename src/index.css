@@ -12,8 +12,10 @@
   --color-surface-container-high: #222a3d;
   --color-surface-container-highest: #2d3449;
   
-  --color-primary: #c0c1ff;
+  --color-primary: #a78bfa;
   --color-primary-container: #8083ff;
+  --color-primary-glow: rgba(167, 139, 250, 0.2);
+  --color-logic: #4fdbc8;
   --color-secondary: #4fdbc8;
   --color-secondary-container: #04b4a2;
   --color-tertiary: #ffb783;
@@ -26,6 +28,11 @@
 }
 
 @layer base {
+  html {
+    scroll-padding-top: 5.5rem;
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-surface-dim text-on-surface antialiased selection:bg-primary/30 selection:text-white;
     font-feature-settings: "ss01", "ss02", "cv01", "cv02";

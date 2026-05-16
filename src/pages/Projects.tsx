@@ -13,8 +13,8 @@ export default function Projects() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-20">
-      <header className="mb-20 text-center">
+    <div className="max-w-7xl mx-auto px-6 pb-20 pt-8">
+      <header className="mb-12 text-center">
         <h1 className="text-5xl font-bold mb-6">Selected Projects</h1>
         <p className="text-xl text-on-surface-variant max-w-2xl mx-auto">
           A collection of high-performance solutions, ranging from scalable backend architectures to pixel-perfect frontend experiences.
@@ -37,14 +37,7 @@ export default function Projects() {
         ))}
       </div>
 
-      <motion.div
-        layout
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        <ProjectList projects={filteredProjects} />
-      </motion.div>
+      <ProjectList projects={filteredProjects} />
     </div>
   );
 }

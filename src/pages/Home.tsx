@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { Button } from '../components/common/Button';
 import { Card } from '../components/common/Card';
 import { ProjectList } from '../components/project/ProjectList';
+import { HorizontalSkills } from '../components/skills/HorizontalSkills';
 import { PROJECTS, EXPERIENCES } from '../utils/constants';
 
 export default function Home() {
@@ -148,6 +149,8 @@ export default function Home() {
             </Card>
           ))}
         </div>
+
+        <HorizontalSkills />
       </section>
 
       {/* Projects Section */}

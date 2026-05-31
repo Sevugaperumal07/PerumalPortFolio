@@ -26,3 +26,12 @@ export interface Experience {
   description: string[];
   skills: string[];
 }
+
+export interface Skill {
+  id: string;
+  name: string;
+  category: string;
+  createdAt?: string;
+  deleted?: boolean;
+}
+
